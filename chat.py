@@ -22,22 +22,23 @@ def main():
     base_url, api_key, model = load_config()
     client = OpenAI(base_url=base_url, api_key=api_key)
 
+    history = []
+
     while True:
-        try:
-            user_input = input("请输入消息（输入 exit 或 quit 退出）：").strip()
-        except EOFError:
-            break
-        if user_input in ("exit", "quit"):
-            break
+        user_input = input("请输入消息：").strip()
+
+        history.append({"role": "user", "content": user_input})
 
         response = client.chat.completions.create(
             model=model,
-            messages=[{"role": "user", "content": user_input}],
+            messages=history,
         )
         reply = response.choices[0].message.content
 
         print("-" * 40)
         typewriter_print(reply)
+
+        history.append({"role": "assistant", "content": reply})
 
 
 if __name__ == "__main__":
